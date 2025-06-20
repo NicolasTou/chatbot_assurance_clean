@@ -1,0 +1,35 @@
+import os
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.chains import RetrievalQA
+from langchain_openai import ChatOpenAI
+
+# 🔐 Clé API OpenAI
+os.environ["OPENAI_API_KEY"] = "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"
+
+
+# 1. Charger les PDF
+loader_1 = PyPDFLoader("Conditions_generales.pdf")
+loader_2 = PyPDFLoader("FAQ_Assurtech.pdf")
+docs = loader_1.load() + loader_2.load()
+
+# 2. Découpage des textes
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+chunks = splitter.split_documents(docs)
+
+# 3. Embedding + vectorisation
+embeddings = OpenAIEmbeddings()
+vectordb = FAISS.from_documents(chunks, embeddings)
+
+# 4. Création du chatbot avec récupération
+retaef
+azef
+zef
+ze
+
+fezf
+ze
+defzx
+

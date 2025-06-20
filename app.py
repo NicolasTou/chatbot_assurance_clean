@@ -1,0 +1,43 @@
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
+from langchain.chains import RetrievalQA
+from langchain_openai import ChatOpenAI
+from langchain_community.document_loaders import PyPDFLoader
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Charge les variables d'environnement depuis le fichier .env
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# Si ta librairie le supporte, tu peux passer explicitement la clé, sinon elle la prendra automatiquement si présente dans l'environnement
+
+# Chargement des documents
+loader = PyPDFLoader("Conditions_generales.pdf")
+docs = loader.load()
+
+# Création des embeddings et de l'index FAISS
+embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+db = FAISS.from_documents(docs, embeddings)
+
+# Création de la chaîne QA
+retriever = db.as_retriever()
+llm = ChatOpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
+qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+
+# Fonction appelée depuis app.py
+def ask_question(query):
+    return qa_chain.invoke({"query": query})["result"]
+
+# Exécution console si le fichier est lancé directement
+if __name__ == "__main__":
+    while True:
+        query = input("Posez votre question (ou 'exit') : ")
+        if query.lower() == "exit":
+            print("Fin du programme.")
+            break
+        result = ask_question(query)
+        print(f"\nRéponse : {result}\n")
+
+        result = ask_question(query)
+        print(f"\nRéponse : {result}\n")
