@@ -1,53 +1,51 @@
-
 import os
+from dotenv import load_dotenv
+
+# Charge le fichier .env si présent
+load_dotenv()
+
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import OpenAIEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 
-# 🔐 Ta clé OpenAI ici
-os.environ["OPENAI_API_KEY"] = "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"
+# Récupère la clé API dans la variable d'environnement
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("La variable d'environnement OPENAI_API_KEY n'est pas définie")
 
-# 1. Charger les PDF
+# Charge les 3 documents PDF
 loader_1 = PyPDFLoader("Conditions_generales.pdf")
 loader_2 = PyPDFLoader("FAQ_Assurtech.pdf")
-docs = loader_1.load() + loader_2.load()
+loader_3 = PyPDFLoader("instructions_LLM.pdf")
 
-# 2. Découpage des textes
+# Charge tout le contenu
+docs = loader_1.load() + loader_2.load() + loader_3.load()
+
+# Découpe les documents en morceaux adaptés
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = splitter.split_documents(docs)
 
-# 3. Embedding + vectorisation
-embeddings = OpenAIEmbeddings()
+# Initialise les embeddings OpenAI
+embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+
+# Crée la base de données vectorielle FAISS
 vectordb = FAISS.from_documents(chunks, embeddings)
 
-# 4. Création du chatbot avec récupération
-retriever = vectordb.as_retriever()
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+# Initialise le LLM ChatOpenAI avec température nulle pour des réponses précises
+llm = ChatOpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
 
-# 5. Interaction utilisateur
+# Crée la chaîne de récupération (retrieval QA) basée sur le vecteur et LLM
+qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectordb.as_retriever())
+
+print("Chatbot FAQ / CGV / Instructions LLM - Tapez 'exit' pour quitter.")
+
 while True:
-    try:
-        query = input("\nPosez votre question (ou 'exit') : ")
-        if query.lower() == "exit":
-            print("Fin du programme.")
-            break
-        result = qa_chain.run(query)
-        print("\nRéponse :", result)
-    except KeyboardInterrupt:
-        print("\nFin du programme par Ctrl+C.")
+    query = input("Vous : ")
+    if query.lower() == "exit":
+        print("Fin du programme.")
         break
-
-
-
-
-
-
-
-
-
-
-
+    response = qa.run(query)
+    print("Bot :", response)
