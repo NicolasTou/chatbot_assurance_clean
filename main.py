@@ -8,7 +8,7 @@ class Query(BaseModel):
     question: str
 
 @app.get("/")
-def helloworld()
+def helloworld():
     return "Hello World"
 @app.post("/ask")
 def ask_bot(query: Query):
