@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-# Charge le fichier .env si présent
+# Charge les variables d'environnement
 load_dotenv()
 
 from langchain_community.document_loaders import PyPDFLoader
@@ -10,6 +10,10 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
+
+# Serveur FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 # Récupère la clé API dans la variable d'environnement
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
