@@ -42,10 +42,15 @@ qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectordb
 
 print("Chatbot FAQ / CGV / Instructions LLM - Tapez 'exit' pour quitter.")
 
-while True:
-    query = input("Vous : ")
-    if query.lower() == "exit":
-        print("Fin du programme.")
-        break
+#while True:
+#    query = input("Vous : ")
+#    if query.lower() == "exit":
+#        print("Fin du programme.")
+#        break
+#    response = qa.run(query)
+#    print("Bot :", response)
+
+def get_bot_response(query: str) -> str:
     response = qa.run(query)
     print("Bot :", response)
+    return response
