@@ -26,7 +26,8 @@ loader_2 = PyPDFLoader("FAQ_Assurtech.pdf")
 loader_3 = PyPDFLoader("instructions_LLM.pdf")
 
 # Charge tout le contenu
-docs = loader_1.load() + loader_2.load() + loader_3.load()
+docs = loader_3.load() + loader_1.load() + loader_2.load()
+#print("docs", docs)
 
 # Découpe les documents en morceaux adaptés
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
