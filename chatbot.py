@@ -71,6 +71,7 @@ qa = RetrievalQA.from_chain_type(
 
 print("Chatbot FAQ / CGV / Instructions LLM - Tapez 'exit' pour quitter.")
 
+
 #while True:
 #    query = input("Vous : ")
 #    if query.lower() == "exit":
